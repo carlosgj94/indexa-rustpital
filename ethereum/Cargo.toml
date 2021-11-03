@@ -1,10 +1,9 @@
 [package]
-name = "indexa"
+name = "ethereum"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-rpc = { path = "rpc" }
-ethereum = { path = "ethereum" }
+rpc = { path = "../rpc" }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
