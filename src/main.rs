@@ -13,13 +13,6 @@ struct RequestParams {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct ValidResponse {
-    jsonrpc: String,
-    id: u128,
-    result: EthereumBlock,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
 struct EthereumBlock {
     hash: String,
     number: String,
@@ -27,7 +20,7 @@ struct EthereumBlock {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let params = json!(["0xE88", true]);
+    let params = json!(["0x4", true]);
     let req_params = RequestParams {
         jsonrpc: "2.0".to_string(),
         method: "eth_getBlockByNumber".to_string(),
@@ -35,7 +28,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         params,
     };
     let client = rpc::Client{endpoint:"http://localhost:8546".to_string()};
-    let resp : Result<ValidResponse, _> = client.get(&req_params);
+    let resp : Result<EthereumBlock, _> = client.get(&req_params);
 
     match resp {
         Ok(r) => {
