@@ -1,7 +1,6 @@
 use rpc::HttpServer;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use std::error::Error;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct RequestParams {
@@ -18,24 +17,35 @@ pub struct EthereumBlock {
     transactions: serde_json::Value,
 }
 
-pub struct GethClient {}
+pub struct GethClient {
+    pub client: rpc::Client,
+}
 
 impl GethClient {
-    pub fn get_block_by_number(number: String) -> EthereumBlock {
-        let params = json!([number, true]);
-        let req_params = RequestParams {
-            jsonrpc: "2.0".to_string(),
-            method: "eth_getBlockByNumber".to_string(),
-            id: 1,
-            params,
-        };
-        let client = rpc::Client {
-            endpoint: "http://localhost:8546".to_string(),
-        };
-        let resp: Result<EthereumBlock, _> = client.get(&req_params);
+    pub fn new(endpoint: &str) -> Self {
+        GethClient {
+            client: rpc::Client {
+                endpoint: endpoint.to_string(),
+            },
+        }
+    }
+
+    pub fn get_block_by_number(&self, number: &str) -> EthereumBlock {
+        let params = json!([number.to_string(), true]);
+        let req_params = GethClient::make_params("eth_getBlockByNumber", params);
+        let resp: Result<EthereumBlock, _> = self.client.get(&req_params);
         match resp {
             Ok(r) => r,
             Err(e) => panic!("Error getting a block {:#?}", e),
+        }
+    }
+
+    fn make_params(method: &str, params: serde_json::Value) -> RequestParams {
+        RequestParams {
+            jsonrpc: "2.0".to_string(),
+            method: method.to_string(),
+            id: 1,
+            params,
         }
     }
 }
