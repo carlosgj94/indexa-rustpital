@@ -40,6 +40,18 @@ impl GethClient {
         }
     }
 
+    // TODO: Create a parser for String -> Hex
+    // TODO: Create an account type
+    pub fn get_balance(&self, account: &str) -> String {
+        let params = json!([account.to_string(), "latest".to_string()]);
+        let req_params = GethClient::make_params("eth_getBalance", params);
+        let resp: Result<String, _> = self.client.get(&req_params);
+        match resp {
+            Ok(r) => r,
+            Err(e) => panic!("Error getting a block {:#?}", e),
+        }
+    }
+
     fn make_params(method: &str, params: serde_json::Value) -> RequestParams {
         RequestParams {
             jsonrpc: "2.0".to_string(),
